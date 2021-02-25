@@ -2,31 +2,34 @@
 
 DIR=$(dirname $(readlink -f $0))
 
-TESTS=${1:-all}
-#IMAGE="composer:php5-alpine"
-IMAGE="composer:latest"
+export MSYS_NO_PATHCONV=1
+
+TEST=${1:-all}
+TAG=${2:-php7.4}
+IMAGE="kamermans/composer"
 
 function run_tests()
 {
     local GUZZLE_VER=$1
+    local DOCKER_TAG=$2
 
     echo "###############################################"
     echo "# Running tests against Guzzle $GUZZLE_VER"
     echo "###############################################"
 
     docker run -ti --rm \
-        -v $DIR/../:/test \
+        -v "$DIR/../:/test" \
         --workdir=/test/guzzle_environments/$GUZZLE_VER \
         --entrypoint=/bin/sh \
-        $IMAGE \
-        -c '([ -f vendor/bin/phpunit ] || composer update); vendor/bin/phpunit -vvvv'
+        $IMAGE:$DOCKER_TAG \
+        -c 'composer update && vendor/bin/phpunit -vvvv'
 }
 
-if [[ $TESTS = "all" ]]; then
-    run_tests 4
-    run_tests 5
-    run_tests 6
-    run_tests 7
+if [[ $TEST = "all" ]]; then
+    run_tests 4 php5.6
+    run_tests 5 php7.4
+    run_tests 6 php7.4
+    run_tests 7 php7.4
 else
-    run_tests $TESTS
+    run_tests $TEST $TAG
 fi
