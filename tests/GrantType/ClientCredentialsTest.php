@@ -24,13 +24,11 @@ class ClientCredentialsTest extends BaseTestCase
         ]);
     }
 
-    /**
-     * @expectedException InvalidArgumentException
-     * @expectedExceptionMessage Config is missing the following keys
-     */
     public function testConstructThrowsForMissing()
     {
-        $grant = new ClientCredentials(new Client(), []);
+        $this->customExpectException(\InvalidArgumentException::class, "Config is missing the following keys", function () {
+            $grant = new ClientCredentials(new Client(), []);
+        });
     }
 
     public function testGetRawData()

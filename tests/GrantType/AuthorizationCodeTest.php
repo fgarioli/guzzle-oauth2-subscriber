@@ -25,13 +25,11 @@ class AuthorizationCodeTest extends BaseTestCase
         ]);
     }
 
-    /**
-     * @expectedException InvalidArgumentException
-     * @expectedExceptionMessage Config is missing the following keys
-     */
     public function testConstructThrowsForMissing()
     {
-        $grant = new AuthorizationCode(new Client(), []);
+        $this->customExpectException(\InvalidArgumentException::class, "Config is missing the following keys", function(){
+            $grant = new AuthorizationCode(new Client(), []);
+        });
     }
 
     public function testGetRawData()

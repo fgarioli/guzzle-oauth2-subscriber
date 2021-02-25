@@ -15,7 +15,7 @@ use kamermans\OAuth2\OAuth2Middleware;
 
 class OAuth2MiddlewareTest extends BaseTestCase
 {
-    public function setUp()
+    public function doSetUp()
     {
         if (Helper::guzzleIs('<', 6)) {
             $this->markTestSkipped("Guzzle 6+ is required for this test");
@@ -24,6 +24,7 @@ class OAuth2MiddlewareTest extends BaseTestCase
 
     public function testConstruct()
     {
+        $this->doSetUp();
         $grant = $this->getMockBuilder('\kamermans\OAuth2\GrantType\ClientCredentials')
             //->setConstructorArgs([$client, []])
             ->disableOriginalConstructor()
@@ -34,6 +35,7 @@ class OAuth2MiddlewareTest extends BaseTestCase
 
     public function testDoesNotTriggerForNonOAuthRequests()
     {
+        $this->doSetUp();
         $reauth_container = [];
         $reauth_history = Middleware::history($reauth_container);
 
@@ -95,6 +97,7 @@ class OAuth2MiddlewareTest extends BaseTestCase
 
     public function testTriggersSignerAndGrantDataProcessor()
     {
+        $this->doSetUp();
 
         // A random access token helps avoid false pasitives due to caching
         $mock_access_token = md5(microtime(true).mt_rand(100000, 999999));
@@ -162,11 +165,9 @@ class OAuth2MiddlewareTest extends BaseTestCase
         $this->assertSame($expected_auth_value, $this->getHeader($container[0]['request'], 'Authorization'));
     }
 
-    /**
-     * @expectedException GuzzleHttp\Exception\ClientException
-     */
     public function testOnErrorDoesNotTriggerForNonOAuthRequests()
     {
+        $this->doSetUp();
 
         // A random access token helps avoid false pasitives due to caching
         $mock_access_token = md5(microtime(true).mt_rand(100000, 999999));
@@ -227,7 +228,9 @@ class OAuth2MiddlewareTest extends BaseTestCase
 //            'auth' => 'oauth',
         ]);
 
-        $response = $client->get('/');
+        $this->customExpectException('GuzzleHttp\Exception\ClientException', '', function() use ($client) {
+            $response = $client->get('/');
+        });
 
         $this->assertCount(0, $reauth_container);
         $this->assertCount(1, $container);
@@ -235,6 +238,7 @@ class OAuth2MiddlewareTest extends BaseTestCase
 
     public function testOnErrorDoesTriggerForOAuthRequests()
     {
+        $this->doSetUp();
 
         // A random access token helps avoid false pasitives due to caching
         $mock_access_token = md5(microtime(true).mt_rand(100000, 999999));
@@ -314,6 +318,7 @@ class OAuth2MiddlewareTest extends BaseTestCase
 
     public function testOnErrorDoesNotTriggerForNon401Requests()
     {
+        $this->doSetUp();
 
         // A random access token helps avoid false pasitives due to caching
         $mock_access_token = md5(microtime(true).mt_rand(100000, 999999));
@@ -397,6 +402,7 @@ class OAuth2MiddlewareTest extends BaseTestCase
 
     public function testTokenPersistenceIsUsed()
     {
+        $this->doSetUp();
 
         // A random access token helps avoid false pasitives due to caching
         $mock_access_token_cached = md5(microtime(true).mt_rand(100000, 999999));
@@ -481,6 +487,7 @@ class OAuth2MiddlewareTest extends BaseTestCase
 
     public function testOnErrorDoesNotLoop()
     {
+        $this->doSetUp();
         // A random access token helps avoid false pasitives due to caching
         $mock_access_token = md5(microtime(true).mt_rand(100000, 999999));
 
@@ -571,6 +578,7 @@ class OAuth2MiddlewareTest extends BaseTestCase
 
     public function __DISABLED__testOnErrorDoesNotLoop()
     {
+        $this->doSetUp();
         // Setup Grant Type
         $grant = $this->getMockBuilder('\kamermans\OAuth2\GrantType\ClientCredentials')
             ->setMethods(['getRawData'])
