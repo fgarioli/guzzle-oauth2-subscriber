@@ -40,11 +40,13 @@ class Collection implements
         $this->data[$offset] = $value;
     }
 
+    #[\ReturnTypeWillChange]
     public function offsetExists($offset)
     {
         return isset($this->data[$offset]);
     }
 
+    #[\ReturnTypeWillChange]
     public function offsetUnset($offset)
     {
         unset($this->data[$offset]);
@@ -55,6 +57,7 @@ class Collection implements
         return $this->data;
     }
 
+    #[\ReturnTypeWillChange]
     public function count()
     {
         return count($this->data);
