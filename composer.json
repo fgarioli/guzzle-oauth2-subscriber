@@ -1,6 +1,7 @@
 {
     "name": "kamermans/guzzle-oauth2-subscriber",
     "type": "library",
+    "version": "0.0.1",
     "description": "OAuth 2.0 client for Guzzle 4, 5, 6 and 7+",
     "keywords": ["oauth", "guzzle"],
     "license": "MIT",
